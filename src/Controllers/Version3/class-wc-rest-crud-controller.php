@@ -299,6 +299,18 @@ abstract class WC_REST_CRUD_Controller extends WC_REST_Posts_Controller {
 			$args['date_query'][0]['after'] = $request['after'];
 		}
 
+		// Set modified_before into date query. Date query must be specified as an array of an array.
+		if ( isset( $request['modified_before'] ) && ! isset( $request['before'] ) ) {
+			$args['date_query'][0]['before'] = $request['modified_before'];
+			$args['date_query'][0]['column'] = 'post_modified';
+		}
+
+		// Set after into date query. Date query must be specified as an array of an array.
+		if ( isset( $request['modified_after'] ) && ! isset( $request['after'] ) ) {
+			$args['date_query'][0]['after'] = $request['modified_after'];
+			$args['date_query'][0]['column'] = 'post_modified';
+		}
+
 		// Force the post_type argument, since it's not a user input variable.
 		$args['post_type'] = $this->post_type;
 
@@ -539,6 +551,18 @@ abstract class WC_REST_CRUD_Controller extends WC_REST_Posts_Controller {
 		);
 		$params['before'] = array(
 			'description'        => __( 'Limit response to resources published before a given ISO8601 compliant date.', 'woocommerce-rest-api' ),
+			'type'               => 'string',
+			'format'             => 'date-time',
+			'validate_callback'  => 'rest_validate_request_arg',
+		);
+		$params['modified_after'] = array(
+			'description'        => __( 'Limit response to resources modified after a given ISO8601 compliant date.', 'woocommerce' ),
+			'type'               => 'string',
+			'format'             => 'date-time',
+			'validate_callback'  => 'rest_validate_request_arg',
+		);
+		$params['modified_before'] = array(
+			'description'        => __( 'Limit response to resources modified before a given ISO8601 compliant date.', 'woocommerce' ),
 			'type'               => 'string',
 			'format'             => 'date-time',
 			'validate_callback'  => 'rest_validate_request_arg',
